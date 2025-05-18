@@ -1,0 +1,22 @@
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: DevOps\ Project-01/Java-Login-App  # Tell GitHub to operate inside the app folder
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Deploy to EC2
+        run: scp -i ${{ secrets.SSH_KEY }} target/*.jar ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/
