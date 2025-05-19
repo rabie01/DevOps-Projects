@@ -1,36 +1,43 @@
-#!/bin/bash
-set -e
+name: Build and Deploy Java WAR to EC2
 
-# Parse arguments
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    --host) HOST="$2"; shift ;;
-    --user) USER="$2"; shift ;;
-    --key) KEY="$2"; shift ;;
-    --war) WAR_PATH="$2"; shift ;;
-    *) echo "Unknown parameter passed: $1"; exit 1 ;;
-  esac
-  shift
-done
+on:
+  push:
+    branches:
+      - main
 
-# Validate inputs
-if [[ -z "$HOST" || -z "$USER" || -z "$KEY" || -z "$WAR_PATH" ]]; then
-  echo "Usage: deploy-war.sh --host <EC2_HOST> --user <EC2_USER> --key <SSH_KEY_PATH> --war <WAR_FILE_PATH>"
-  exit 1
-fi
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-WAR_FILE=$(basename "$WAR_PATH")
-REMOTE_TMP="/home/$USER/$WAR_FILE"
-TOMCAT_WEBAPPS="/opt/tomcat/webapps"
+    env:
+      JAVA_VERSION: '17'
+      WAR_NAME: 'dptweb-1.0.war'
 
-echo "[INFO] Copying WAR to EC2 instance..."
-scp -i "$KEY" -o StrictHostKeyChecking=no "$WAR_PATH" "$USER@$HOST:$REMOTE_TMP"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-echo "[INFO] Deploying WAR on EC2..."
-ssh -i "$KEY" -o StrictHostKeyChecking=no "$USER@$HOST" << EOF
-  sudo mv "$REMOTE_TMP" "$TOMCAT_WEBAPPS/"
-  sudo chown tomcat:tomcat "$TOMCAT_WEBAPPS/$WAR_FILE"
-  sudo systemctl restart tomcat
-EOF
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
 
-echo "[INFO] Deployment completed successfully."
+      - name: Build with Maven
+        run: |
+          cd 'DevOps Project-01/Java-Login-App'
+          mvn clean package
+
+      - name: Deploy WAR to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_PUBLIC_IP }}
+          EC2_USER: ${{ secrets.EC2_SSH_USER }}
+          SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_KEY" > key.pem
+          chmod 600 key.pem
+          bash scripts/deploy-war.sh \
+            --host "$EC2_HOST" \
+            --user "$EC2_USER" \
+            --key "key.pem" \
+            --war "DevOps Project-01/Java-Login-App/target/${{ env.WAR_NAME }}"
