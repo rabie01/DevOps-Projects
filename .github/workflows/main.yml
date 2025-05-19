@@ -25,6 +25,10 @@ jobs:
         run: |
           cd 'DevOps Project-01/Java-Login-App'
           mvn clean package
+      - name: list compiled files
+        run: |
+          cd 'DevOps Project-01/Java-Login-App'
+          ls -la target
 
       - name: Deploy WAR to EC2
         env:
