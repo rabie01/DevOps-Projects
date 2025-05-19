@@ -34,6 +34,7 @@ jobs:
         run: |
           echo "$SSH_KEY" > key.pem
           chmod 600 key.pem
+          cd 'DevOps Project-01/'
           bash scripts/deploy-war.sh \
             --host "$EC2_HOST" \
             --user "$EC2_USER" \
