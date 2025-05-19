@@ -2,8 +2,6 @@ name: Build and Deploy Java WAR to EC2
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   build-and-deploy:
