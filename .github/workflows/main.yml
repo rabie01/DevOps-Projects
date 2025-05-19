@@ -28,7 +28,7 @@ jobs:
 
       - name: Copy JAR to EC2
         env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
           echo "$SSH_KEY" > key.pem
           chmod 600 key.pem
