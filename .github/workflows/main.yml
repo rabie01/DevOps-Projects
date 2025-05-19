@@ -36,9 +36,9 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          echo "$SSH_KEY" > key.pem
-          chmod 600 key.pem
           cd 'DevOps Project-01/'
+          echo "$SSH_KEY" > key.pem
+          chmod 600 key.pem          
           bash scripts/deploy-war.sh \
             --host "$EC2_HOST" \
             --user "$EC2_USER" \
