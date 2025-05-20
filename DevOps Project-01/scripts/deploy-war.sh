@@ -26,7 +26,7 @@ TOMCAT_WEBAPPS="/opt/tomcat/webapps"
 # echo "[INFO] Copying WAR to EC2 instance..."
 # scp -i "$KEY" -o StrictHostKeyChecking=no "$WAR_PATH" "$USER@$HOST:$REMOTE_TMP"
 
-BASTION_HOST="${BASTION_HOST:'44.204.60.120'}"   # replace with GitHub secret or hardcoded for test
+BASTION_HOST="${BASTION_HOST:-44.204.60.120}"   # replace with GitHub secret or hardcoded for test
 BASTION_USER="${BASTION_USER:-$USER}"             # same user usually
 
 echo "[INFO] Copying WAR to private app server through bastion..."
