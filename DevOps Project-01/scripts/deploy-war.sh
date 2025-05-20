@@ -30,10 +30,10 @@ BASTION_HOST="${BASTION_HOST:-44.204.60.120}"   # replace with GitHub secret or 
 BASTION_USER="${BASTION_USER:-$USER}"             # same user usually
 
 scp -i "$KEY" \
-    -o ProxyJump="$BASTION_USER@$BASTION_HOST" \
     -o StrictHostKeyChecking=no \
-    -o UserKnownHostsFile=/dev/null \
+    -o "ProxyCommand ssh -o StrictHostKeyChecking=no -i $KEY -W %h:%p $BASTION_USER@$BASTION_HOST" \
     "$WAR_PATH" "$USER@$HOST:$REMOTE_TMP"
+
 
 
 # echo "[INFO] Deploying WAR on EC2..."
@@ -44,11 +44,7 @@ scp -i "$KEY" \
 # EOF
 
 echo "[INFO] Deploying WAR on app server through bastion..."
-ssh -i "$KEY" \
-    -o ProxyJump="$BASTION_USER@$BASTION_HOST" \
-    -o StrictHostKeyChecking=no \
-    -o UserKnownHostsFile=/dev/null \
-    "$USER@$HOST" << EOF
+ssh -i "$KEY" -o StrictHostKeyChecking=no -o "ProxyCommand ssh -o StrictHostKeyChecking=no -i $KEY -W %h:%p $BASTION_USER@$BASTION_HOST" "$USER@$HOST" << EOF
   sudo mv "$REMOTE_TMP" "$TOMCAT_WEBAPPS/"
   sudo chown tomcat:tomcat "$TOMCAT_WEBAPPS/$WAR_FILE"
   sudo systemctl restart tomcat
