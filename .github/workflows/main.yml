@@ -35,6 +35,7 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          BASTION_HOST: ${{ secrets.BASTION_HOST }}
         run: |
           cd 'DevOps Project-01/'
           echo "$SSH_KEY" > key.pem
@@ -44,3 +45,4 @@ jobs:
             --user "$EC2_USER" \
             --key "key.pem" \
             --war "Java-Login-App/target/${{ env.WAR_NAME }}"
+            --BASTION_HOST "$BASTION_HOST"
