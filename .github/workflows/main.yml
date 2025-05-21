@@ -45,5 +45,5 @@ jobs:
             --host "$EC2_HOST" \
             --user "$EC2_USER" \
             --key "key.pem" \
-            --war "Java-Login-App/target/${{ env.WAR_NAME }}"
+            --war "Java-Login-App/target/${{ env.WAR_NAME }}" \
             --BASTION_HOST "$BASTION_HOST"
