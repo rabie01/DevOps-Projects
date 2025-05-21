@@ -8,7 +8,7 @@ while [[ "$#" -gt 0 ]]; do
     --user) USER="$2"; shift ;;
     --key) KEY="$2"; shift ;;
     --war) WAR_PATH="$2"; shift ;;
-    --BASTION_HOST) BASTION_HOST = "$2"; shift ;;
+    --BASTION_HOST) BASTION_HOST="$2"; shift ;;
     *) echo "Unknown parameter passed: $1"; exit 1 ;;
   esac
   shift
