@@ -2,6 +2,7 @@ name: Build and Deploy Java WAR to EC2
 
 on:
   push:
+  workflow_dispatch:  # Enables manual triggering from the Actions tab
 
 jobs:
   build-and-deploy:
