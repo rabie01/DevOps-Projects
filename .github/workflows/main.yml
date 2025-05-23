@@ -1,4 +1,4 @@
-name: Build and Deploy Java WAR to EC2
+name: Build and Deploy Java WAR to single EC2
 
 on:
   push:
