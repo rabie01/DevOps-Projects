@@ -1,8 +1,11 @@
-name: Build and Deploy Java WAR to single EC2
+name: Build and Deploy Java WAR to ASG via S3
 
 on:
   push:
-  workflow_dispatch:  # Enables manual triggering from the Actions tab
+    branches:
+      - main  # or your main branch name
+
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   build-and-deploy:
@@ -11,10 +14,17 @@ jobs:
     env:
       JAVA_VERSION: '17'
       WAR_NAME: 'dptweb-1.0.war'
+      S3_KEY: 'artifacts/dptweb-1.0.war'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -26,24 +36,33 @@ jobs:
         run: |
           cd 'DevOps Project-01/Java-Login-App'
           mvn clean package
-      - name: list compiled files
-        run: |
-          cd 'DevOps Project-01/Java-Login-App'
-          ls -la target
 
-      - name: Deploy WAR to EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
-          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          BASTION_HOST: ${{ secrets.BASTION_HOST }}
+      - name: Upload WAR to S3
         run: |
-          cd 'DevOps Project-01/'
-          echo "$SSH_KEY" > key.pem
-          chmod 600 key.pem          
-          bash scripts/deploy-war.sh \
-            --host "$EC2_HOST" \
-            --user "$EC2_USER" \
-            --key "key.pem" \
-            --war "Java-Login-App/target/${{ env.WAR_NAME }}" \
-            --BASTION_HOST "$BASTION_HOST"
+          aws s3 cp "DevOps Project-01/Java-Login-App/target/${{ env.WAR_NAME }}" \
+            "s3://${{ secrets.S3_BUCKET }}/${{ env.S3_KEY }}" \
+            --region "${{ secrets.AWS_REGION }}"
+
+      - name: Start ASG Instance Refresh
+        run: |
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name "${{ secrets.ASG_NAME }}" \
+            --region "${{ secrets.AWS_REGION }}" \
+            --preferences '{"MinHealthyPercentage": 100, "InstanceWarmup": 60}'
+
+      - name: Confirm Refresh Started
+        run: |
+          aws autoscaling describe-instance-refreshes \
+            --auto-scaling-group-name "${{ secrets.ASG_NAME }}" \
+            --region "${{ secrets.AWS_REGION }}"
+
+      # - name: Notify Slack (Optional)
+      #   if: always()
+      #   uses: slackapi/slack-github-action@v1.25.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": "🚀 WAR deployment completed and ASG refresh triggered for `${{ secrets.ASG_NAME }}`."
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
