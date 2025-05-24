@@ -2,8 +2,8 @@ name: Build and Deploy Java WAR to ASG via S3
 
 on:
   push:
-    branches:
-      - main  # or your main branch name
+    # branches:
+    #   - main  # or your main branch name
 
   workflow_dispatch:  # Allows manual trigger
 
