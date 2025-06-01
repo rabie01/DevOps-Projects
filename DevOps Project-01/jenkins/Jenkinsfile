@@ -33,6 +33,25 @@ pipeline {
             }
         }
 
+        /*
+        stage('Upload WAR to S3') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    dir('DevOps Project-01') {
+                        sh '''
+                            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                            aws s3 cp Java-Login-App/target/dptweb-1.0.war s3://${TF_VAR_war_s3_bucket}/${TF_VAR_war_s3_key}
+                        '''
+                    }
+                }
+            }
+        }
+        */
+
         stage('Terraform Init') {
             steps {
                 dir('DevOps Project-01/terraform') {
