@@ -28,7 +28,7 @@ pipeline {
         stage('Upload WAR to S3') {
             steps {
                 dir('DevOps Project-01') {
-                    sh 'aws s3 cp Java-Login-App/target/java-login-app.war s3://${TF_VAR_war_s3_bucket}/${TF_VAR_war_s3_key}'
+                    sh 'aws s3 cp Java-Login-App/target/dptweb-1.0.war s3://${TF_VAR_war_s3_bucket}/${TF_VAR_war_s3_key}'
                 }
             }
         }
