@@ -25,5 +25,5 @@ variable "desired_capacity" {
 
 variable "ami_id" {
   description = "Base AMI for EC2 (e.g., Amazon Linux 2)"
-  default = "ami-05a3e0187917e3e24"
+  default = "ami-0953476d60561c955"
 }
