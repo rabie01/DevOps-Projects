@@ -67,7 +67,7 @@ pipeline {
                 }
             }
         }
-/*
+
         stage('Terraform Apply') {
             steps {
                 dir('DevOps Project-01/terraform') {
@@ -75,7 +75,7 @@ pipeline {
                 }
             }
         }
- */
+ 
     }
     post {
         always {
