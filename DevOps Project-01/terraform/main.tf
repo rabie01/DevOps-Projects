@@ -10,6 +10,13 @@ resource "aws_subnet" "public_a" {
   map_public_ip_on_launch = true
 }
 
+resource "aws_subnet" "public_b" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = true
+}
+
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
 }
@@ -25,6 +32,7 @@ resource "aws_route_table" "public" {
 
 resource "aws_route_table_association" "public_a" {
   subnet_id      = aws_subnet.public_a.id
+  subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public.id
 }
 
@@ -101,7 +109,7 @@ resource "aws_autoscaling_group" "web_asg" {
   desired_capacity     = var.desired_capacity
   max_size             = 3
   min_size             = 1
-  vpc_zone_identifier  = [aws_subnet.public_a.id]
+  vpc_zone_identifier  = [aws_subnet.public_a.id, aws_subnet.public_b.id]
   launch_template {
     id      = aws_launch_template.web.id
     version = "$Latest"
@@ -115,7 +123,7 @@ resource "aws_lb" "web" {
   name               = "web-alb"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_sg.id]
-  subnets            = [aws_subnet.public_a.id]
+  subnets            = [aws_subnet.public_a.id, aws_subnetpublic_b.id] # Must be in 2 different AZs
 }
 
 resource "aws_lb_target_group" "web_tg" {
