@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'us-east-1',
-        TF_VAR_war_s3_bucket = 'mybucett2100',
+        AWS_DEFAULT_REGION = 'us-east-1'
+        TF_VAR_war_s3_bucket = 'mybucett2100'
         TF_VAR_war_s3_key    = 'artifacts/dptweb-1.0.war'
     }
 
