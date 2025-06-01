@@ -17,7 +17,6 @@ pipeline {
         stage('Build WAR') {
             steps {
                 dir('DevOps Project-01/Java-Login-App') {
-                    #sh 'mvn clean package'
                     sh '''
                         export DB_HOST=localhost
                         mvn clean package
