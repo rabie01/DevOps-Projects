@@ -126,7 +126,7 @@ resource "aws_lb" "web" {
   name               = "web-alb"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.web_sg.id]
-  subnets            = [aws_subnet.public_a.id, aws_subnetpublic_b.id] # Must be in 2 different AZs
+  subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id] # Must be in 2 different AZs
 }
 
 resource "aws_lb_target_group" "web_tg" {
