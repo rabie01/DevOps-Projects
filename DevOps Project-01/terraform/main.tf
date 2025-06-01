@@ -42,14 +42,23 @@ resource "aws_route_table_association" "public_b" {
 # Security Group
 resource "aws_security_group" "web_sg" {
   name        = "web-sg"
-  description = "Allow HTTP"
+  description = "Allow HTTP from ALB"
   vpc_id      = aws_vpc.main.id
 
+  # Allow ALB (port 80 from the internet)
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"]  # Public traffic to the ALB
+  }
+
+  # Allow ALB to forward to EC2 (port 8080)
+  ingress {
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_lb.web.security_groups[0]]  # ALB's SG
   }
 
   egress {
@@ -59,6 +68,7 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 # IAM Role for EC2
 resource "aws_iam_role" "ec2_role" {
@@ -131,13 +141,13 @@ resource "aws_lb" "web" {
 
 resource "aws_lb_target_group" "web_tg" {
   name     = "web-tg"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 
   health_check {
     path = "/"
-    port = "80"
+    port = "8080"
   }
 }
 
