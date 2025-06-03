@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_REGION = 'us-east-1'
+    TF_IN_AUTOMATION = 'true'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/rabie01/DevOps-Projects.git'
+      }
+    }
+
+    stage('Terraform Init') {
+      steps {
+        dir('DevOps Project-01/terraform') {
+          sh 'terraform init -input=false'
+        }
+      }
+    }
+
+    stage('Terraform Destroy') {
+      steps {
+        dir('DevOps Project-01/terraform') {
+          sh 'terraform destroy -auto-approve'
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}
