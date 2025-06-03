@@ -72,7 +72,7 @@ resource "aws_security_group" "web_sg" {
 
 # IAM Role for EC2
 resource "aws_iam_role" "ec2_role" {
-  name = "ec2_s3_access_role"
+  name = "ec2_s3_access_role_profile"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -92,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "attach_s3" {
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
-  name = "ec2_s3_profile"
+  name = "ec2_s3_access_role_profile"
   role = aws_iam_role.ec2_role.name
 }
 
