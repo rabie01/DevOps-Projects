@@ -4,7 +4,7 @@ variable "aws_region" {
 }
 
 variable "war_s3_bucket" {
-  default = "mybucett21000"
+  default = "mybuckett21000"
 }
 variable "war_s3_key" {
   default = "artifacts/dptweb-1.0.war"
