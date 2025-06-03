@@ -10,9 +10,7 @@ variable "war_s3_key" {
   default = "artifacts/dptweb-1.0.war"
 }
 
-variable "tf_s3_key" {
-  default = "terraform/project01/terraform.tfstate"
-}
+
 
 variable "instance_type" {
   default = "t3.micro"
